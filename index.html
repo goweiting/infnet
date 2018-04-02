@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Visualising Networks in Informatics</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+    <style type="text/css">
+    path.arc {
+    cursor: move;
+    fill: #fff;
+    }
+    .node {
+    font-size: 10px;
+    }
+    .node:hover {
+    fill: #1f77b4;
+    }
+    .link {
+    fill: none;
+    stroke: #1f77b4;
+    stroke-opacity: .4;
+    pointer-events: none;
+    }
+    .link.source, .link.target {
+    stroke-opacity: 1;
+    stroke-width: 2px;
+    }
+    .node.target {
+    fill: #d62728 !important;
+    }
+    .link.source {
+    stroke: #d62728;
+    }
+    .node.source {
+    fill: #2ca02c;
+    }
+    .link.target {
+    stroke: #2ca02c;
+    }
+    .links line {
+    stroke: #999;
+    stroke-opacity: 0.6;
+    }
+    .nodes circle {
+    stroke: #fff;
+    stroke-width: 1.5px;
+    }
+    .svg-container {
+    display: inline-block;
+    position: relative;
+    width: 100%;
+    padding-bottom: 100%; /* aspect ratio */
+    vertical-align: top;
+    overflow: hidden;
+    }
+    .svg-content-responsive {
+    display: inline-block;
+    position: absolute;
+    top: 10px;
+    left: 0;
+    }
+    </style>
+  </head>
+  <body>
+    <script type="text/javascript">
+    $('ul.nav.nav-pills li a').click(function() {
+    $(this).parent().addClass('active').siblings().removeClass('active');
+    });
+    function renderFDL() {
+    d3.selectAll("svg > g> *").remove();
+    reload("js/sample_adjmat.js");
+    return;
+    }
+    function renderAdjMat(){
+    d3.selectAll("svg > g> *").remove();
+    reload("js/sample.js");
+    return;
+    }
+    function reload(name){
+    var script = document.getElementById('abc');
+    var parent = script.parentNode;
+    script.parentNode.removeChild( script); // remove the script
+    var newscript = document.createElement('script');
+    newscript.type= 'text/javascript';
+    newscript.src = name;
+    newscript.id = 'abc';
+    parent.appendChild(newscript);
+    return;
+    }
+    </script>
+    <div class="container">
+      <nav class="navbar navbar-inverse">
+        <div class="container-fluid">
+          <div class="navbar-header">
+            <a class="navbar-brand" href="#">infnet.io</a>
+          </div>
+          <ul class="nav navbar-nav">
+            <li class="active"><a href="#">Collaboration Network</a></li>
+            <li><a href="#">Topic Models</a></li>
+            <li><a href="#">Topic-collaboration Network</a></li>
+          </ul>
+        </div>
+      </nav>
+      <div class="row">
+        <div class="container-fluid">
+          <!-- <h4 style="text-align:right">Informatics Collaboration Network</h4> -->
+          <div class='col-sm-2'>
+            <ul class="nav nav-pills nav-stacked" data-spy="affix" data-offset-top="205">
+              <li class="active"><a href="#" id="infnet-fdl" onClick="renderFDL()">Force-directed Layout</a></li>
+              <li><a href="#" id="infnet-adjmat" onClick="renderAdjMat()">Adjacency Matrix</a></li>
+            </ul>
+          </div>
+          <div class="col-sm-7">
+            <svg
+              id="chart" width="960" height="500"
+              viewBox="0 0 960 500"
+              preserveAspectRatio="xMidYMid meet">
+            </svg>
+            <script src="js/sample.js" id="abc"></script>
+          </div>
+          <div class='col-sm-3'>
+            <p>Order: <select id="order">
+              <option value="name">by Name</option>
+              <option value="count">by Frequency</option>
+              <option value="group">by Cluster</option>
+            </select>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
