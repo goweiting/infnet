@@ -3,7 +3,7 @@
   <head>
     <title>Visualising Networks in Informatics</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=.8">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
@@ -94,7 +94,7 @@
     </script>
     <div class="container">
       <nav class="navbar navbar-inverse">
-        <div class="row container-fluid col-sm-12">
+        <div class="container-fluid col-sm-12">
           <ul class="nav navbar-nav">
             <li class='active' ><a href="index.html">Collaboration Network</a></li>
             <!-- <li class=""><a href="topic.html">Topic Models</a></li> -->
@@ -105,7 +105,7 @@
               <ul class="dropdown-menu">
                 <li><a href="topic.html" onClick=render_tm('tmfull_meta')> tm-20yr </a></li>
                 <li><a href="topic.html" onClick=render_tm('tmrest_meta')> tm-6yr </a></li>
-                <li><a href="topic.html"> tm-dblp </a></li>
+                <li><a href="topic.html" onClick=render_tm('tmdblp')> tm-dblp </a></li>
               </ul>
             </li>
             <li><a href="#">Topic-collaboration Network</a></li>
