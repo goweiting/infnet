@@ -94,13 +94,20 @@
     </script>
     <div class="container">
       <nav class="navbar navbar-inverse">
-        <div class="container-fluid col-sm-12">
-          <div class="navbar-header">
-            <a class="navbar-brand" href="#">infnet.io</a>
-          </div>
+        <div class="row container-fluid col-sm-12">
           <ul class="nav navbar-nav">
-            <li class="active"><a href="index.html">Collaboration Network</a></li>
-            <li><a href="topic.html">Topic Models</a></li>
+            <li class='active' ><a href="index.html">Collaboration Network</a></li>
+            <!-- <li class=""><a href="topic.html">Topic Models</a></li> -->
+            <li class="dropdown">
+              <a class="dropdown-toggle" data-toggle="dropdown" href="topic.html">Topic Models (LDAvis)
+                <span class="caret"></span>
+              </a>
+              <ul class="dropdown-menu">
+                <li><a href="topic.html" onClick=render_tm('tmfull_meta')> tm-20yr </a></li>
+                <li><a href="topic.html" onClick=render_tm('tmrest_meta')> tm-6yr </a></li>
+                <li><a href="topic.html"> tm-dblp </a></li>
+              </ul>
+            </li>
             <li><a href="#">Topic-collaboration Network</a></li>
           </ul>
         </div>
