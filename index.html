@@ -67,15 +67,27 @@
   </head>
   <body>
     <script type="text/javascript">
-    $('ul.nav.nav-pills li a').click(function() {
+
+    function renderFDL() {
+      $('ul.nav.nav-pills li a').click(function() {
     $(this).parent().addClass('active').siblings().removeClass('active');
     });
-    function renderFDL() {
     d3.selectAll("svg > g> *").remove();
-    reload("js/sample_adjmat.js");
+    reload("js/default_fdl.js");
+    return;
+    }
+    function renderFDL_bygroup() {
+      $('ul.nav.nav-pills li a').click(function() {
+    $(this).parent().addClass('active').siblings().removeClass('active');
+    });
+    d3.selectAll("svg > g> *").remove();
+    reload("js/default_fdl_group.js");
     return;
     }
     function renderAdjMat(){
+      $('ul.nav.nav-pills li a').click(function() {
+    $(this).parent().addClass('active').siblings().removeClass('active');
+    });
     d3.selectAll("svg > g> *").remove();
     reload("js/sample.js");
     return;
@@ -109,6 +121,16 @@
               </ul>
             </li>
             <li><a href="#">Topic-collaboration Network</a></li>
+            <li class="dropdown">
+              <a class="dropdown-toggle" data-toggle="dropdown" href="nb.html">Notebooks
+                <span class="caret"></span>
+              </a>
+              <ul class="dropdown-menu">
+                <li><a href="nb/preprocess_poinf.html"> preprocess data </a></li>
+                <!-- <li><a href="nb.html" onClick=render_tm('tmrest_meta')> tm-6yr </a></li>
+                <li><a href="topic.html" onClick=render_tm('tmdblp')> tm-dblp </a></li> -->
+              </ul>
+            </li>
           </ul>
         </div>
       </nav>
@@ -118,16 +140,17 @@
           <div class='col-sm-2'>
             <ul class="nav nav-pills nav-stacked" data-spy="affix" data-offset-top="205">
               <li class="active"><a href="#" id="infnet-fdl" onClick="renderFDL()">Force-directed Layout</a></li>
+              <li><a href="#" id="infnet-fdl-group" onClick="renderFDL_bygroup()">Stretch by institutes</a></li>
               <li><a href="#" id="infnet-adjmat" onClick="renderAdjMat()">Adjacency Matrix</a></li>
             </ul>
           </div>
           <div class="col-sm-7">
             <svg
-              id="chart" width="960" height="500"
+              id="chart" width="960" height="600"
               viewBox="0 0 960 500"
               preserveAspectRatio="xMidYMid meet">
             </svg>
-            <script src="js/sample.js" id="abc"></script>
+            <script src="js/default_fdl.js" id="abc"></script>
           </div>
           <div class='col-sm-3'>
             <!--             <p>Order: <select id="order">
