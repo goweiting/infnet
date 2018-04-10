@@ -1,166 +1,213 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <title>Visualising Networks in Informatics</title>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=.8">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    <script src="https://d3js.org/d3.v4.min.js"></script>
-    <style type="text/css">
-    path.arc {
-    cursor: move;
-    fill: #fff;
-    }
-    .node {
-    font-size: 10px;
-    }
-    .node:hover {
-    fill: #1f77b4;
-    }
-    .link {
-    fill: none;
-    stroke: #1f77b4;
-    stroke-opacity: .4;
-    pointer-events: none;
-    }
-    .link.source, .link.target {
-    stroke-opacity: 1;
-    stroke-width: 2px;
-    }
-    .node.target {
-    fill: #d62728 !important;
-    }
-    .link.source {
-    stroke: #d62728;
-    }
-    .node.source {
-    fill: #2ca02c;
-    }
-    .link.target {
-    stroke: #2ca02c;
-    }
-    .links line {
-    stroke: #999;
-    stroke-opacity: 0.6;
-    }
-    .nodes circle {
-    stroke: #fff;
-    stroke-width: 1.5px;
-    }
-    .svg-container {
-    display: inline-block;
-    position: relative;
-    width: 100%;
-    padding-bottom: 100%; /* aspect ratio */
-    vertical-align: top;
-    overflow: hidden;
-    }
-    .svg-content-responsive {
-    display: inline-block;
-    position: absolute;
-    top: 10px;
-    left: 0;
-    }
-    </style>
-  </head>
-  <body>
-    <script type="text/javascript">
+    <head>
+        <title>Visualising Networks in Informatics</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=.8">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+        <script src="https://d3js.org/d3.v4.min.js"></script>
+        <script
+        src="https://code.jquery.com/jquery-1.12.4.min.js"
+        integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ="
+        crossorigin="anonymous"></script>
+        <script
+        src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"
+        integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU="
+        crossorigin="anonymous"></script>
+        <script type='text/javascript' src="http://code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css"> </script>
+        <link rel="stylesheet" href="//rawgithub.com/Caged/d3-tip/master/examples/example-styles.css">
+        <style type="text/css">
+        path.arc {
+        cursor: move;
+        fill: #fff;
+        }
+        .node {
+        font-size: 10px;
+        stroke: #fff;
+        stroke-width: 1.5px;
+        }
+        .node:hover {
+        fill: #1f77b4;
+        }
+        .link {
+        fill: none;
+        stroke: #1f77b4;
+        stroke-opacity: .4;
+        pointer-events: none;
+        }
+        .link.source, .link.target {
+        stroke-opacity: 1;
+        stroke-width: 2px;
+        }
+        .node.target {
+        fill: #d62728 !important;
+        }
+        .link.source {
+        stroke: #d62728;
+        }
+        .node.source {
+        fill: #2ca02c;
+        }
+        .link.target {
+        stroke: #2ca02c;
+        }
+        .links line {
+        stroke: #999;
+        stroke-opacity: 0.6;
+        }
+        .nodes circle {
+        stroke: #fff;
+        stroke-width: 1.5px;
+        }
 
-    function renderFDL() {
-      $('ul.nav.nav-pills li a').click(function() {
-    $(this).parent().addClass('active').siblings().removeClass('active');
-    });
-    d3.selectAll("svg > g> *").remove();
-    reload("js/default_fdl.js");
-    return;
-    }
-    function renderFDL_bygroup() {
-      $('ul.nav.nav-pills li a').click(function() {
-    $(this).parent().addClass('active').siblings().removeClass('active');
-    });
-    d3.selectAll("svg > g> *").remove();
-    reload("js/default_fdl_group.js");
-    return;
-    }
-    function renderAdjMat(){
-      $('ul.nav.nav-pills li a').click(function() {
-    $(this).parent().addClass('active').siblings().removeClass('active');
-    });
-    d3.selectAll("svg > g> *").remove();
-    reload("js/sample.js");
-    return;
-    }
-    function reload(name){
-    var script = document.getElementById('abc');
-    var parent = script.parentNode;
-    script.parentNode.removeChild( script); // remove the script
-    var newscript = document.createElement('script');
-    newscript.type= 'text/javascript';
-    newscript.src = name;
-    newscript.id = 'abc';
-    parent.appendChild(newscript);
-    return;
-    }
-    </script>
-    <div class="container">
-      <nav class="navbar navbar-inverse">
-        <div class="container-fluid col-sm-12">
-          <ul class="nav navbar-nav">
-            <li class='active' ><a href="index.html">Collaboration Network</a></li>
-            <!-- <li class=""><a href="topic.html">Topic Models</a></li> -->
-            <li class="dropdown">
-              <a class="dropdown-toggle" data-toggle="dropdown" href="topic.html">Topic Models (LDAvis)
-                <span class="caret"></span>
-              </a>
-              <ul class="dropdown-menu">
-                <li><a href="topic.html" onClick=render_tm('tmfull_meta')> tm-20yr </a></li>
-                <li><a href="topic.html" onClick=render_tm('tmrest_meta')> tm-6yr </a></li>
-                <li><a href="topic.html" onClick=render_tm('tmdblp')> tm-dblp </a></li>
-              </ul>
-            </li>
-            <li><a href="#">Topic-collaboration Network</a></li>
-            <li class="dropdown">
-              <a class="dropdown-toggle" data-toggle="dropdown" href="nb.html">Notebooks
-                <span class="caret"></span>
-              </a>
-              <ul class="dropdown-menu">
-                <li><a href="nb/preprocess_poinf.html"> preprocess data </a></li>
-                <!-- <li><a href="nb.html" onClick=render_tm('tmrest_meta')> tm-6yr </a></li>
-                <li><a href="topic.html" onClick=render_tm('tmdblp')> tm-dblp </a></li> -->
-              </ul>
-            </li>
-          </ul>
+        d3-tip {
+        line-height: 1;
+        color: black;
+        }
+
+        svg-container {
+        display: inline-block;
+        position: relative;
+        width: 100%;
+        padding-bottom: 100%;
+        vertical-align: top;
+        overflow: hidden;
+        }
+        .svg-content-responsive {
+        display: inline-block;
+        position: absolute;
+        top: 10px;
+        left: 0;
+        }
+        </style>
+    </head>
+    <body>
+        <script type="text/javascript">
+        function renderFDL() {
+        $('ul.nav.nav-pills li a').click(function() {
+        $(this).parent().addClass('active').siblings().removeClass('active');
+        });
+        d3.selectAll("svg > g> *").remove();
+        reload("js/default_fdl.js");
+        return;
+        }
+        function renderFDL_bygroup() {
+        $('ul.nav.nav-pills li a').click(function() {
+        $(this).parent().addClass('active').siblings().removeClass('active');
+        });
+        d3.selectAll("svg > g> *").remove();
+        reload("js/default_fdl_group.js");
+        return;
+        }
+        function renderAdjMat(){
+        $('ul.nav.nav-pills li a').click(function() {
+        $(this).parent().addClass('active').siblings().removeClass('active');
+        });
+        d3.selectAll("svg > g> *").remove();
+        reload("js/sample.js");
+        return;
+        }
+        function reload(name){
+        var script = document.getElementById('abc');
+        var parent = script.parentNode;
+        script.parentNode.removeChild( script); // remove the script
+        var newscript = document.createElement('script');
+        newscript.type= 'text/javascript';
+        newscript.src = name;
+        newscript.id = 'abc';
+        parent.appendChild(newscript);
+        return;
+        }
+        function searchNode() {
+        //find the node
+        var selectedVal = document.getElementById('search').value;
+        console.log(selectedVal);
+
+        var svg = d3.select("svg");
+        var node = svg.selectAll(".node");
+        console.log(node);
+        if (selectedVal == "none") {
+        node.style("stroke", "white").style("stroke-width", "1");
+        } else {
+        var selected = node.NodeList.forEach(function (d, i) {
+            if (d.name != selectedVal){
+                console.log(d.name);
+                return d;
+            };
+        });
+        selected.style("opacity", "0");
+        var link = svg.selectAll(".link")
+        link.style("opacity", "0");
+        d3.selectAll(".node, .link").transition()
+        .duration(5000)
+        .style("opacity", 1);
+        }
+        }
+
+        </script>
+        <div class="container">
+            <nav class="navbar navbar-inverse">
+                <div class="container-fluid col-sm-12">
+                    <ul class="nav navbar-nav">
+                        <li class='active' ><a href="index.html">Collaboration Network</a></li>
+                        <!-- <li class=""><a href="topic.html">Topic Models</a></li> -->
+                        <li class="dropdown">
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="topic.html">Topic Models (LDAvis)
+                                <span class="caret"></span>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a href="topic.html" onClick=render_tm('tmfull_meta')> tm-20yr </a></li>
+                                <li><a href="topic.html" onClick=render_tm('tmrest_meta')> tm-6yr </a></li>
+                                <li><a href="topic.html" onClick=render_tm('tmdblp')> tm-dblp </a></li>
+                            </ul>
+                        </li>
+                        <li><a href="#">Topic-collaboration Network</a></li>
+                        <li class="dropdown">
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="nb.html">Notebooks
+                                <span class="caret"></span>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a href="nb/preprocess_poinf.html"> preprocess data </a></li>
+                                <!-- <li><a href="nb.html" onClick=render_tm('tmrest_meta')> tm-6yr </a></li>
+                                <li><a href="topic.html" onClick=render_tm('tmdblp')> tm-dblp </a></li> -->
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+            <div class="row">
+                <div class="container-fluid">
+                    <!-- <h4 style="text-align:right">Informatics Collaboration Network</h4> -->
+                    <div class='col-sm-2'>
+                        <ul class="nav nav-pills nav-stacked" data-spy="affix" data-offset-top="205">
+                            <li class="active"><a href="#" id="infnet-fdl" onClick="renderFDL()">Force-directed Layout</a></li>
+                            <li><a href="#" id="infnet-fdl-group" onClick="renderFDL_bygroup()">Stretch by institutes</a></li>
+                            <li><a href="#" id="infnet-adjmat" onClick="renderAdjMat()">Adjacency Matrix</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-sm-10">
+                        <div class="ui-widget">
+                            <input id="search">
+                            <button type="button" onclick="searchNode()">Search</button>
+                        </div>
+                        <svg
+                            id="chart" width="900" height="550"
+                            viewBox="0 0 900 550"
+                            preserveAspectRatio=MidYMid meet">
+                        </svg>
+                        <script src="js/default_fdl.js" id="abc"></script>
+                    </div>
+                    <!-- <div class='col-sm-3'> -->
+                    <!--             <p>Order: <select id="order">
+                        <option value="name">by Name</option>
+                        <option value="count">by Frequency</option>
+                        <option value="group">by Cluster</option>
+                    </select>
+                </p> -->
+                <!-- </div> -->
+            </div>
         </div>
-      </nav>
-      <div class="row">
-        <div class="container-fluid">
-          <!-- <h4 style="text-align:right">Informatics Collaboration Network</h4> -->
-          <div class='col-sm-2'>
-            <ul class="nav nav-pills nav-stacked" data-spy="affix" data-offset-top="205">
-              <li class="active"><a href="#" id="infnet-fdl" onClick="renderFDL()">Force-directed Layout</a></li>
-              <li><a href="#" id="infnet-fdl-group" onClick="renderFDL_bygroup()">Stretch by institutes</a></li>
-              <li><a href="#" id="infnet-adjmat" onClick="renderAdjMat()">Adjacency Matrix</a></li>
-            </ul>
-          </div>
-          <div class="col-sm-7">
-            <svg
-              id="chart" width="960" height="600"
-              viewBox="0 0 960 500"
-              preserveAspectRatio="xMidYMid meet">
-            </svg>
-            <script src="js/default_fdl.js" id="abc"></script>
-          </div>
-          <div class='col-sm-3'>
-            <!--             <p>Order: <select id="order">
-              <option value="name">by Name</option>
-              <option value="count">by Frequency</option>
-              <option value="group">by Cluster</option>
-            </select>
-          </p> -->
-        </div>
-      </div>
-    </div>
-  </body>
+    </body>
 </html>

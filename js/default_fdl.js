@@ -1,6 +1,13 @@
 var svg = d3.select("svg"),
     width = +svg.attr("width"),
-    height = +svg.attr("height")-50; // offset st it does not over; limit the amount of space
+    height = +svg.attr("height"); // offset st it does not over; limit the amount of space
+
+
+//Toggle stores whether the highlighting is on
+var toggle = 0;
+//Create an array logging what is connected to what
+var linkedByIndex = {};
+var optArray = [];
 
 // var color = d3.scaleOrdinal(d3.schemeCategory20);
 var color = d3.scaleOrdinal() // these are the colors defined in the paper
@@ -17,11 +24,12 @@ var color = d3.scaleOrdinal() // these are the colors defined in the paper
 '#e6e6ff'])
 
 var simulation = d3.forceSimulation()
-    .force("link", d3.forceLink().distance(20).id(function(d) {
+    .force("link", d3.forceLink().distance(40).id(function(d) {
         return d.id;
     }))
+    .force("boundary", d3.forceCollide(10).strength(0.1))
     // .force('lowerbound', d3.forceY(height/2).strength(0.001))
-    .force("charge", d3.forceManyBody().strength(-10).distanceMax(height/4))
+    .force("charge", d3.forceManyBody().strength(-30).distanceMax(height/4))
     .force("center", d3.forceCenter(width / 2, height / 2));
 
 // simulation.alpha
@@ -34,11 +42,22 @@ function checkWeighted(graph){
     }
 }
 
+//Set up tooltip
+// var tip = d3.tip()
+//     .attr('class', 'd3-tip')
+//     .offset([-10, 0])
+//     .html(function (d) {
+//     return  d.name + "";
+// })
+// svg.call(tip);
+
+
 d3.json("infnet6yr.json", function(error, graph) {
     if (error) throw error;
 
     var weighted = checkWeighted(graph);
-    console.log(weighted);
+    // console.log(weighted);
+    //
     var link = svg.append("g")
         .attr("class", "links")
         .selectAll("line")
@@ -53,12 +72,14 @@ d3.json("infnet6yr.json", function(error, graph) {
 
         });
 
+
+
     var node = svg.append("g")
         .attr("class", "nodes")
         .selectAll("circle")
         .data(graph.nodes)
         .enter().append("circle")
-        .attr("r", 5) // radius of circle
+        .attr("r", 9) // radius of circle
         .attr("fill", function(d) {
             // color the nodes according to the color of the group
             return color(d.group);
@@ -66,7 +87,10 @@ d3.json("infnet6yr.json", function(error, graph) {
         .call(d3.drag()
             .on("start", dragstarted)
             .on("drag", dragged)
-            .on("end", dragended));
+            .on("end", dragended))
+         .on('dblclick', connectedNodes)
+        // .on('mouseover', tip.show) //Added
+        // .on('mouseout', tip.hide); //Added
 
     // add node label
     node.append("title")
@@ -93,7 +117,20 @@ d3.json("infnet6yr.json", function(error, graph) {
     //         chart.attr("height", targetWidth / aspect);
     //     });
 
+    // for doubleclicked
+    for (i = 0; i < graph.nodes.length; i++) {
+        linkedByIndex[i + "," + i] = 1;
+    };
+    graph.links.forEach(function (d) {
+        // console.log(d.source.index);
+        linkedByIndex[d.source.index + "," + d.target.index] = 1;
+    });
+    // console.log(linkedByIndex);
 
+    for (var i = 0; i < graph.nodes.length - 1; i++) {
+        optArray.push(graph.nodes[i].name);
+    }
+    optArray = optArray.sort();
 
     function ticked() {
         // This is called and the links and node's location are set.
@@ -121,6 +158,51 @@ d3.json("infnet6yr.json", function(error, graph) {
             .attr("cy", function(d) {
                 return d.y = Math.max(ry, Math.min(height-ry, d.y)); });
     }
+
+
+    //This function looks up whether a pair are neighbours
+    function neighboring(a, b) {
+        return linkedByIndex[a.index + "," + b.index];
+    }
+
+    function connectedNodes() {
+
+        if (toggle == 0) {
+            //Reduce the opacity of all but the neighbouring nodes
+            d = d3.select(this).node().__data__;
+
+            node.style("opacity", function (o) {
+                a = linkedByIndex[d.index +"," + o.index];
+                b = linkedByIndex[o.index + "," + d.index];
+                // console.log(a,b);
+                if ( a||b ){
+                    return 1;
+                } else {
+                    return 0.1;
+                }
+                // return neighboring(d, o) | neighboring(o, d) ? 1 : 0.1;
+            });
+            link.style("opacity", function (o) {
+                return d.index==o.source.index || d.index==o.target.index ? 1 : 0.1;
+            });
+            //Reduce the op
+            toggle = 1;
+
+        } else {
+            // console.log('toggle0');
+            //Put them back to opacity=1
+            node.style("opacity", 1);
+            link.style("opacity", 1);
+            toggle = 0;
+        }
+    }
+
+    $(function () {
+        $("#search").autocomplete({
+            source: optArray
+        });
+    });
+
 });
 
 function dragstarted(d) {
@@ -140,3 +222,10 @@ function dragended(d) {
     d.fx = null;
     d.fy = null;
 }
+
+
+
+
+
+
+
