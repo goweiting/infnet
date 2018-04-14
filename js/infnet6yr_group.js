@@ -85,7 +85,7 @@ d3.json("infnet6yr.json", function(error, graph) {
         .selectAll("circle")
         .data(graph.nodes)
         .enter().append("circle")
-        .attr("r", 5) // radius of circle
+        .attr("r", 9) // radius of circle
         .attr("fill", function(d) {
             // color the nodes according to the color of the group
             return color(d.group);

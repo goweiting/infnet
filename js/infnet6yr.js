@@ -24,12 +24,12 @@ var color = d3.scaleOrdinal() // these are the colors defined in the paper
 '#e6e6ff'])
 
 var simulation = d3.forceSimulation()
-    .force("link", d3.forceLink().distance(40).id(function(d) {
+    .force("link", d3.forceLink().distance(8).id(function(d) {
         return d.id;
     }))
-    .force("boundary", d3.forceCollide(10).strength(0.1))
+    .force("boundary", d3.forceCollide(8).strength(.5))
     // .force('lowerbound', d3.forceY(height/2).strength(0.001))
-    .force("charge", d3.forceManyBody().strength(-30).distanceMax(height/4))
+    .force("charge", d3.forceManyBody().strength(-50).distanceMax(height/3).distanceMin(10))
     .force("center", d3.forceCenter(width / 2, height / 2));
 
 // simulation.alpha
@@ -72,8 +72,6 @@ d3.json("infnet6yr.json", function(error, graph) {
 
         });
 
-
-
     var node = svg.append("g")
         .attr("class", "nodes")
         .selectAll("circle")
@@ -88,7 +86,7 @@ d3.json("infnet6yr.json", function(error, graph) {
             .on("start", dragstarted)
             .on("drag", dragged)
             .on("end", dragended))
-         .on('dblclick', connectedNodes)
+        .on('dblclick', connectedNodes)
         // .on('mouseover', tip.show) //Added
         // .on('mouseout', tip.hide); //Added
 
@@ -98,24 +96,33 @@ d3.json("infnet6yr.json", function(error, graph) {
             var _str = d.name + '\n' + d.institute;
             return _str
         });
+
+    // var texts = svg.selectAll("text.label")
+    //             .data(graph.nodes)
+    //             .enter().append("text")
+    //             .attr("class", "label")
+    //             .attr("fill", "black")
+    //             .text(function(d) {  return d.name;  });
+
     // add node location
     simulation
         .nodes(graph.nodes)
         .on("tick", ticked); // call ticked to get the source!
 
-    simulation.force("link")
+    simulation
+        .force("link")
         .links(graph.links);
 
-    // var aspect = width / height,
-    //     chart = d3.select('#chart');
+    var aspect = width / height,
+        chart = d3.select('#chart');
 
-    // d3.select(window)
-    //     .on("resize", function() {
-    //         var targetWidth = chart.node().getBoundingClientRect().width;
-    //         var targetWidth = chart.node().getBoundingClientRect().width;
-    //         chart.attr("width", targetWidth);
-    //         chart.attr("height", targetWidth / aspect);
-    //     });
+    d3.select(window)
+        .on("resize", function() {
+            var targetWidth = chart.node().getBoundingClientRect().width;
+            var targetWidth = chart.node().getBoundingClientRect().width;
+            chart.attr("width", targetWidth);
+            chart.attr("height", targetWidth / aspect);
+        });
 
     // for doubleclicked
     for (i = 0; i < graph.nodes.length; i++) {
@@ -125,7 +132,7 @@ d3.json("infnet6yr.json", function(error, graph) {
         // console.log(d.source.index);
         linkedByIndex[d.source.index + "," + d.target.index] = 1;
     });
-    // console.log(linkedByIndex);
+
 
     for (var i = 0; i < graph.nodes.length - 1; i++) {
         optArray.push(graph.nodes[i].name);
@@ -157,6 +164,10 @@ d3.json("infnet6yr.json", function(error, graph) {
 
             .attr("cy", function(d) {
                 return d.y = Math.max(ry, Math.min(height-ry, d.y)); });
+
+        // texts.attr("transform", function(d) { // this works to show thename on the node; not v nice
+        //     return "translate(" + d.x + "," + d.y + ")";
+        // });
     }
 
 
@@ -172,10 +183,8 @@ d3.json("infnet6yr.json", function(error, graph) {
             d = d3.select(this).node().__data__;
 
             node.style("opacity", function (o) {
-                a = linkedByIndex[d.index +"," + o.index];
-                b = linkedByIndex[o.index + "," + d.index];
-                // console.log(a,b);
-                if ( a||b ){
+
+                if ( linkedByIndex[d.index +"," + o.index] || linkedByIndex[o.index + "," + d.index]){
                     return 1;
                 } else {
                     return 0.1;
@@ -203,6 +212,8 @@ d3.json("infnet6yr.json", function(error, graph) {
         });
     });
 
+
+
 });
 
 function dragstarted(d) {
@@ -214,7 +225,7 @@ function dragstarted(d) {
 function dragged(d) {
     d.fx = d3.event.x;
     d.fy = d3.event.y;
-    // console.log(d.fx,d.fy);
+    // console.log(d.__proto__);
 }
 
 function dragended(d) {
