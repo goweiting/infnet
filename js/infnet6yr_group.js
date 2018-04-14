@@ -4,7 +4,7 @@ var svg = d3.select("svg"),
 
 var pos_group_x = d3.scaleOrdinal()
 .domain([0,1,2,3,4,5,6,7,8,9,10,11])
-  .range([width/8, width*2/8, width*3/8, width*4/8,width*5/8,width*6/8,width*7/8,width,width,width]);
+  .range([width/6, width*2/6, width*3/6, width*4/6,width*5/6,width,width,width,width,width]);
 
 var pos_group_y = d3.scaleOrdinal()
 .domain([0,1,2,3,4,5,6,7,8,9,10,11])
@@ -65,7 +65,6 @@ d3.json("infnet6yr.json", function(error, graph) {
     if (error) throw error;
 
     var weighted = checkWeighted(graph);
-    console.log(weighted);
     var link = svg.append("g")
         .attr("class", "links")
         .selectAll("line")
@@ -93,7 +92,8 @@ d3.json("infnet6yr.json", function(error, graph) {
         .call(d3.drag()
             .on("start", dragstarted)
             .on("drag", dragged)
-            .on("end", dragended));
+            .on("end", dragended))
+        .on('dblclick', connectedNodes);
 
     // add node label
     node.append("title")
@@ -111,6 +111,7 @@ d3.json("infnet6yr.json", function(error, graph) {
 
     var aspect = width / height,
         chart = d3.select('#chart');
+
     d3.select(window)
         .on("resize", function() {
             var targetWidth = chart.node().getBoundingClientRect().width;
@@ -119,6 +120,19 @@ d3.json("infnet6yr.json", function(error, graph) {
             chart.attr("height", targetHeight/aspect);
         });
 
+    // for doubleclicked
+    for (i = 0; i < graph.nodes.length; i++) {
+        linkedByIndex[i + "," + i] = 1;
+    };
+    graph.links.forEach(function (d) {
+        // console.log(d.source.index);
+        linkedByIndex[d.source.index + "," + d.target.index] = 1;
+    });
+
+    for (var i = 0; i < graph.nodes.length - 1; i++) {
+        optArray.push(graph.nodes[i].name);
+    }
+    optArray = optArray.sort();
 
 
     function ticked() {
@@ -146,6 +160,41 @@ d3.json("infnet6yr.json", function(error, graph) {
             .attr("cy", function(d) {
                 return d.y = Math.max(ry, Math.min(height - ry, d.y)); });
     }
+
+    function connectedNodes() {
+
+        if (toggle == 0) {
+            //Reduce the opacity of all but the neighbouring nodes
+            d = d3.select(this).node().__data__;
+
+            node.style("opacity", function (o) {
+
+                if ( linkedByIndex[d.index +"," + o.index] || linkedByIndex[o.index + "," + d.index]){
+                    return 1;
+                } else {
+                    return 0.1;
+                }
+                // return neighboring(d, o) | neighboring(o, d) ? 1 : 0.1;
+            });
+            link.style("opacity", function (o) {
+                return d.index==o.source.index || d.index==o.target.index ? 1 : 0.1;
+            });
+            //Reduce the op
+            toggle = 1;
+
+        } else {
+            // console.log('toggle0');
+            //Put them back to opacity=1
+            node.style("opacity", 1);
+            link.style("opacity", 1);
+            toggle = 0;
+        }
+    }
+    $(function () {
+        $("#search").autocomplete({
+            source: optArray
+        });
+    });
 });
 
 function dragstarted(d) {

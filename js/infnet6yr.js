@@ -3,12 +3,6 @@ var svg = d3.select("svg"),
     height = +svg.attr("height"); // offset st it does not over; limit the amount of space
 
 
-//Toggle stores whether the highlighting is on
-var toggle = 0;
-//Create an array logging what is connected to what
-var linkedByIndex = {};
-var optArray = [];
-
 // var color = d3.scaleOrdinal(d3.schemeCategory20);
 var color = d3.scaleOrdinal() // these are the colors defined in the paper
   .range(['#000000',
@@ -52,7 +46,7 @@ function checkWeighted(graph){
 // svg.call(tip);
 
 
-d3.json("infnet6yr.json", function(error, graph) {
+d3.json("json/infnet6yr.json", function(error, graph) {
     if (error) throw error;
 
     var weighted = checkWeighted(graph);

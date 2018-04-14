@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Visualising Networks in Informatics</title>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=.8">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.13.0/d3.min.js"></script>
+        <!-- <script language="javascript" type="text/javascript" src="assets/d3.js"></script> -->
+        <script
+        src="https://code.jquery.com/jquery-1.12.4.min.js"
+        integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ="
+        crossorigin="anonymous"></script>
+        <script
+        src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"
+        integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU="
+        crossorigin="anonymous"></script>
+        <script type='text/javascript' src="http://code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css"> </script>
+        <link
+        rel="stylesheet"
+        href="//rawgithub.com/Caged/d3-tip/master/examples/example-styles.css">
+        <style type="text/css">
+        path.arc {
+        cursor: move;
+        fill: #fff;
+        }
+        .node {
+        font-size: 10px;
+        stroke: #fff;
+        stroke-width: 1.5px;
+        }
+        .node:hover {
+        fill: #1f77b4;
+        }
+        .link {
+        fill: none;
+        stroke: #1f77b4;
+        stroke-opacity: .4;
+        pointer-events: none;
+        }
+        .link.source, .link.target {
+        stroke-opacity: 1;
+        stroke-width: 2px;
+        }
+        .node.target {
+        fill: #d62728 !important;
+        }
+        .link.source {
+        stroke: #d62728;
+        }
+        .node.source {
+        fill: #2ca02c;
+        }
+        .link.target {
+        stroke: #2ca02c;
+        }
+        .links line {
+        stroke: #999;
+        stroke-opacity: 0.6;
+        }
+        .nodes circle {
+        stroke: #fff;
+        stroke-width: 1.5px;
+        }
+        d3-tip {
+        line-height: 1;
+        color: black;
+        }
+        svg-container {
+        display: inline-block;
+        position: relative;
+        width: 100%;
+        padding-bottom: 100%;
+        vertical-align: top;
+        overflow: hidden;
+        }
+        .svg-content-responsive {
+        display: inline-block;
+        position: absolute;
+        top: 10px;
+        left: 0;
+        }
+        </style>
+    </head>
+    <body>
+        <script type="text/javascript">
+        //Toggle stores whether the highlighting is on
+        var toggle = 0;
+        //Create an array logging what is connected to what
+        var linkedByIndex = {};
+        var optArray = [];
+
+        function renderFDL(name) {
+        $('ul.nav.nav-pills li a').click(function() {
+        $(this).parent().addClass('active').siblings().removeClass('active');
+        });
+        d3.selectAll("svg > g").remove();
+        reload("js/" + name + ".js");
+        return;
+        }
+        // function renderAdjMat(){
+        // $('ul.nav.nav-pills li a').click(function() {
+        // $(this).parent().addClass('active').siblings().removeClass('active');
+        // });
+        // d3.selectAll("svg > g> *").remove();
+        // reload("js/sample.js");
+        // return;
+        // }
+        function reload(name){
+        toggle = 0;
+        linkedByIndex = {};
+        optArray = [];
+        var script = document.getElementById('abc');
+        var parent = script.parentNode;
+        script.parentNode.removeChild( script); // remove the script
+        var newscript = document.createElement('script');
+        newscript.type= 'text/javascript';
+        newscript.src = name;
+        newscript.id = 'abc';
+        parent.appendChild(newscript);
+        return;
+        }
+
+
+        function searchNode() {
+            //find the node
+            var selectedVal = document.getElementById('search').value;
+            // console.log(selectedVal);
+            var nodes = d3.select("svg ").selectAll("g")._groups[0][1].childNodes;
+            var links = d3.select("svg ").selectAll("g")._groups[0][0].childNodes;
+            var svg = d3.select("svg")
+            toggle=1
+
+            var selected = nodes.forEach(function (d, i) {
+                if (d.__data__.name === selectedVal){
+                    d.style["opacity"] = 1
+                    d.attributes.r = "100"
+                    // d.__data__.fx = width/2.;
+                    // d.__data__.fy = height/2;
+                    // simulation.alphaTarget(0.1).restart();
+                    // return d;
+
+
+                } else {
+                    d.style["opacity"] = 0.1;
+
+                    // d.__data__.
+                }
+            }
+            );
+
+            links.forEach(function(d,i){
+                if (d.__data__.source.name === selectedVal || d.__data__.target.name === selectedVal){
+                    d.style["opacity"] = 1 // change styl eof line
+                    nodes[d.__data__.source.index].style['opacity']= d.__data__.source.name === selectedVal ? 1 : 0.3
+                    nodes[d.__data__.target.index].style['opacity']= d.__data__.target.name === selectedVal ? 1 : 0.3
+                    return
+                } else {
+                    d.style["opacity"] = .1
+                }
+            })
+
+
+            // var link = svg.selectAll(".link")
+            // "0style("opacity", "0");
+            // d3.selectAll(".node, .link").transition()
+            // .duration(5000)
+            // .style("opacity", 1);
+        }
+
+
+        </script>
+        <div class="container">
+            <nav class="navbar navbar-inverse">
+                <div class="container-fluid col-sm-12">
+                    <ul class="nav navbar-nav">
+                        <li class='active' ><a href="index.html">Collaboration Network</a></li>
+                        <!-- <li class=""><a href="topic.html">Topic Models</a></li> -->
+                        <li class="dropdown">
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="topic.html">Topic Models (LDAvis)
+                                <span class="caret"></span>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a href="topic.html" onClick=render_tm('tmfull_meta')> tm-20yr </a></li>
+                                <li><a href="topic.html" onClick=render_tm('tmrest_meta')> tm-6yr </a></li>
+                                <li><a href="topic.html" onClick=render_tm('tmdblp')> tm-dblp </a></li>
+                            </ul>
+                        </li>
+                        <li><a href="topicnet.html">Topic-collaboration Network</a></li>
+                        <li class="dropdown">
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="nb.html">Notebooks
+                                <span class="caret"></span>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a href="nb/preprocess_poinf.html"> preprocess data </a></li>
+
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+            <div class="row">
+                <div class="container-fluid">
+                    <!-- <h4 style="text-align:right">Informatics Collaboration Network</h4> -->
+                    <div class='col-sm-2'>
+                        <ul class="nav nav-pills nav-stacked" data-spy="affix" data-offset-top="205">
+                            <li class="active"><a href="#" id="infnet-fdl" onClick="renderFDL('topicnet_6yr')">topicnet-6yr</a></li>
+                            <li><a href="#" id="infnet-fdl" onClick="renderFDL('topicnetref_6yr')">topicnetref-6yr</a></li>
+                        </ul>
+                        <p>
+                            <ul>
+                                <li>Mouseover each node to reveal details of the node (name, institute).</li>
+                                <li>Double click on any node to reveal node(s) connected to it.</li>
+                                <li>Search for individuals in the graph using search button.</li>
+                                <li>Double-click to reset graph</li>
+                            </ul>
+                        </p>
+                    </div>
+                    <div class="col-sm-10">
+                        <div class="ui-widget">
+                            <input id="search">
+                            <button type="button" onclick="searchNode()">Search</button>
+                        </div>
+                        <svg
+                            id="chart" width="900" height="550"
+                            viewBox="0 0 900 550"
+                            preserveAspectRatio=MidYMid meet">
+                        </svg>
+                        <script src="js/topicnet_6yr.js" id="abc"></script>
+                    </div>
+                </div>
+            </div>
+        </body>
+    </html>

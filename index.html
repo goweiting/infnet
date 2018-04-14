@@ -86,11 +86,17 @@
     </head>
     <body>
         <script type="text/javascript">
+        //Toggle stores whether the highlighting is on
+        var toggle = 0;
+        //Create an array logging what is connected to what
+        var linkedByIndex = {};
+        var optArray = [];
+
         function renderFDL(name) {
         $('ul.nav.nav-pills li a').click(function() {
         $(this).parent().addClass('active').siblings().removeClass('active');
         });
-        d3.selectAll("svg > g> *").remove();
+        d3.selectAll("svg > g").remove();
         reload("js/" + name + ".js");
         return;
         }
@@ -103,6 +109,9 @@
         // return;
         // }
         function reload(name){
+        toggle = 0;
+        linkedByIndex = {};
+        optArray = [];
         var script = document.getElementById('abc');
         var parent = script.parentNode;
         script.parentNode.removeChild( script); // remove the script
@@ -114,29 +123,27 @@
         return;
         }
 
+
+
         function searchNode() {
+            // console.log(optArray);
+            // console.log(linkedByIndex);
             //find the node
             var selectedVal = document.getElementById('search').value;
-            // console.log(selectedVal);
-            var nodes = d3.select("svg ").selectAll("g")._groups[0][1].childNodes;
-            var links = d3.select("svg ").selectAll("g")._groups[0][0].childNodes;
+
             var svg = d3.select("svg")
+            var nodes = d3.select("svg").selectAll("g")._groups[0][1].childNodes;
+            var links = d3.select("svg").selectAll("g")._groups[0][0].childNodes;
+
             toggle=1
 
-            var selected = nodes.forEach(function (d, i) {
+            nodes.forEach(function (d, i) {
                 if (d.__data__.name === selectedVal){
+                    console.log(d);
                     d.style["opacity"] = 1
                     d.attributes.r = "100"
-                    // d.__data__.fx = width/2.;
-                    // d.__data__.fy = height/2;
-                    // simulation.alphaTarget(0.1).restart();
-                    // return d;
-
-
                 } else {
                     d.style["opacity"] = 0.1;
-
-                    // d.__data__.
                 }
             }
             );
@@ -146,18 +153,10 @@
                     d.style["opacity"] = 1 // change styl eof line
                     nodes[d.__data__.source.index].style['opacity']= d.__data__.source.name === selectedVal ? 1 : 0.3
                     nodes[d.__data__.target.index].style['opacity']= d.__data__.target.name === selectedVal ? 1 : 0.3
-                    return
                 } else {
                     d.style["opacity"] = .1
                 }
             })
-
-
-            // var link = svg.selectAll(".link")
-            // "0style("opacity", "0");
-            // d3.selectAll(".node, .link").transition()
-            // .duration(5000)
-            // .style("opacity", 1);
         }
 
 
@@ -178,7 +177,7 @@
                                 <li><a href="topic.html" onClick=render_tm('tmdblp')> tm-dblp </a></li>
                             </ul>
                         </li>
-                        <li><a href="#">Topic-collaboration Network</a></li>
+                        <li><a href="topicnet.html">Topic-collaboration Network</a></li>
                         <li class="dropdown">
                             <a class="dropdown-toggle" data-toggle="dropdown" href="nb.html">Notebooks
                                 <span class="caret"></span>
@@ -196,14 +195,19 @@
                     <!-- <h4 style="text-align:right">Informatics Collaboration Network</h4> -->
                     <div class='col-sm-2'>
                         <ul class="nav nav-pills nav-stacked" data-spy="affix" data-offset-top="205">
-                            <li class="active"><a href="#" id="infnet-fdl" onClick="renderFDL('infnet6yr')">Force-directed Layout</a></li>
-                            <li><a href="#" id="infnet-fdl-group" onClick="renderFDL('infnet6yr_group')">Stretch by institutes</a></li>
+                            <!-- TODO: CReATE FUNCTIONT HAT TAKES IT AS A NAME! -->
+                            <li class="active"><a href="#" id="infnet-fdl" onClick="renderFDL('infnet6yr')">infnet-6yr</a></li>
+                            <li><a href="#" id="infnet-fdl" onClick="renderFDL('infnet6yr_w')">infnet-6yr (weighted)</a></li>
+                            <li><a href="#" id="infnet-fdl" onClick="renderFDL('infnet20yr')">infnet-20yr</a></li>
+                            <!-- <li><a href="#" id="infnet-fdl-group" onClick="renderFDL('infnet6yr_group')">Stretch by institutes</a></li> -->
                             <!-- <li><a href="#" id="infnet-adjmat" onClick="renderAdjMat()">Adjacency Matrix</a></li> -->
                         </ul>
                         <p>
                             <ul>
                                 <li>Mouseover each node to reveal details of the node (name, institute).</li>
                                 <li>Double click on any node to reveal node(s) connected to it.</li>
+                                <li>Search for individuals in the graph using search button.</li>
+                                <li>Double-click to reset graph</li>
                             </ul>
                         </p>
                     </div>
