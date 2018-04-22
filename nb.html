@@ -67,29 +67,16 @@
   </head>
   <body>
     <script type="text/javascript">
-    $('ul.nav.nav-pills li a').click(function() {
+    function load_page(name){
+    console.log(name);
+    html = '<object align="middle" width=1024  height=900 type="text/html" data="nb/' + name + '"></object>';
+    console.log(html);
+
+    document.getElementById("content").innerHTML=html
+
+    $('li a').click(function() {
     $(this).parent().addClass('active').siblings().removeClass('active');
     });
-    function renderFDL() {
-    d3.selectAll("svg > g> *").remove();
-    reload("js/sample_adjmat.js");
-    return;
-    }
-    function renderAdjMat(){
-    d3.selectAll("svg > g> *").remove();
-    reload("js/sample.js");
-    return;
-    }
-    function reload(name){
-    var script = document.getElementById('abc');
-    var parent = script.parentNode;
-    script.parentNode.removeChild( script); // remove the script
-    var newscript = document.createElement('script');
-    newscript.type= 'text/javascript';
-    newscript.src = name;
-    newscript.id = 'abc';
-    parent.appendChild(newscript);
-    return;
     }
     </script>
     <div class="container">
@@ -114,35 +101,29 @@
                 <span class="caret"></span>
               </a>
               <ul class="dropdown-menu">
-                <li><a href="nb/preprocess_poinf.html">Processing staff from Informatics </a></li>
-                <li><a href="nb/preprocess_pubs.html">Preprocessing publications</a></li>
+                <li><a href="#" onClick=load_page("preprocess_poinf.html")>
+                  Processing staff from Informatics </a></li>
+                <li><a href="#" onClick=load_page("preprocess_pubs.html")>
+                  Preprocessing publications</a></li>
+                <li class="active"><a href="#" onClick=load_page("infnet.html")>
+                  Informatics Collaboration Network</a></li>
+                <li><a href="#" onClick=load_page("topicModelling.html")>
+                  Topic Models</a></li>
+                <li><a href="#" onClick=load_page("embedding.html")>
+                  Topic-similarity Networks</a></li>
+                <!-- <li><a href="nb/analysis.html"></a>Analysis of Networks</li> -->
               </ul>
             </li>
           </ul>
         </div>
       </nav>
-      <div class="row">
-        <div class="container-fluid">
-          <!-- <h4 style="text-align:right">Informatics Collaboration Network</h4> -->
-          <!-- <div class='col-sm-1'></div> -->
-
-          <div class="col-sm-12" id="content">
-
-          </div>
+      <div class="container-fluid">
+        <div class="col-sm-12" id="content"></div>
+        <div>
           <script type='text/javascript'>
-            function load_home() {
-                 document.getElementById("content").innerHTML='<object align="middle" width=960 height=640 type="text/html" data="nb/preprocess_poinf.html" ></object>';
-            }
-            load_home()
-            </script>
-          <!-- <div class='col-sm-1'> -->
-            <!--             <p>Order: <select id="order">
-              <option value="name">by Name</option>
-              <option value="count">by Frequency</option>
-              <option value="group">by Cluster</option>
-            </select>
-          </p> -->
-        <!-- </div> -->
+          load_page("infnet.html");
+          </script>
+        </div>
       </div>
     </div>
   </body>
