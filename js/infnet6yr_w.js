@@ -9,7 +9,6 @@ var toggle = 0;
 var linkedByIndex = {};
 var optArray = [];
 
-// var color = d3.scaleOrdinal(d3.schemeCategory20);
 var color = d3.scaleOrdinal() // these are the colors defined in the paper
   .domain(['UNKNOWN',
 'centre for intelligent systems and their applications',
@@ -20,30 +19,27 @@ var color = d3.scaleOrdinal() // these are the colors defined in the paper
 'neuroinformatics dtc',
 'institute of perception action and behaviour',
 'school of philosophy psychology and language sciences',
-'deanery of clinical science',
-'?'])
+'deanery of clinical sciences'])
   .range(['#000000',
 '#0000ff',
 '#00ffff',
 '#00cc00',
 '#ff9900',
 '#ff0000',
-'#F20BCE',
+'#F20BCE', // pink
 '#999966',
 '#ccffff',
-'#ffffb3', // yellow
-'#e6e6ff']);
+'#ffffb3' // yellow
+]);
 
 var simulation = d3.forceSimulation()
-    .force("link", d3.forceLink().distance(8).id(function(d) {
+    .force("link", d3.forceLink().distance(15).id(function(d) {
         return d.id;
     }))
-    .force("boundary", d3.forceCollide(8).strength(.5))
+    .force("boundary", d3.forceCollide(8).strength(.9))
     // .force('lowerbound', d3.forceY(height/2).strength(0.001))
-    .force("charge", d3.forceManyBody().strength(-50).distanceMax(height/3).distanceMin(10))
+    .force("charge", d3.forceManyBody().strength(-50).distanceMax(height/3).distanceMin(15))
     .force("center", d3.forceCenter(width / 2, height / 2));
-
-// simulation.alpha
 
 function checkWeighted(graph){
     if (graph.links[0]["weight"]){
@@ -53,14 +49,6 @@ function checkWeighted(graph){
     }
 }
 
-//Set up tooltip
-// var tip = d3.tip()
-//     .attr('class', 'd3-tip')
-//     .offset([-10, 0])
-//     .html(function (d) {
-//     return  d.name + "";
-// })
-// svg.call(tip);
 
 
 d3.json("json/infnet6yr_w.json", function(error, graph) {
@@ -76,9 +64,10 @@ d3.json("json/infnet6yr_w.json", function(error, graph) {
         .enter().append("line")
         .attr("stroke-width", function(d) {
             if (weighted){
-                return (Math.exp(d.weight)); // scale the weights by 2
+                console.log(d.weight);
+                return (Math.exp(d.weight) * 1.5); // scale the weights by 2
             } else{
-                return 1.5 //
+                return 2.5;
             }
 
         });
@@ -98,8 +87,6 @@ d3.json("json/infnet6yr_w.json", function(error, graph) {
             .on("drag", dragged)
             .on("end", dragended))
         .on('dblclick', connectedNodes)
-        // .on('mouseover', tip.show) //Added
-        // .on('mouseout', tip.hide); //Added
 
     // add node label
     node.append("title")
@@ -108,12 +95,17 @@ d3.json("json/infnet6yr_w.json", function(error, graph) {
             return _str
         });
 
-    // var texts = svg.selectAll("text.label")
-    //             .data(graph.nodes)
-    //             .enter().append("text")
-    //             .attr("class", "label")
-    //             .attr("fill", "black")
-    //             .text(function(d) {  return d.name;  });
+    //Set up tooltip
+    var tip = d3.tip()
+        .attr('class', 'd3-tip')
+        // .offset([-10, 0])
+        .html(function (d) {
+            return   "<p>"+ fixName(d.name) +" </p> <p> " + fixDeptName(d.institute) + "</p>";
+    });
+    d3.selectAll('circle').call(tip);
+    d3.selectAll('circle')
+        .on('mouseover', tip.show)
+        .on('mouseout', tip.hide);
 
     // add node location
     simulation

@@ -8,19 +8,19 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.13.0/d3.min.js"></script>
-        <!-- <script language="javascript" type="text/javascript" src="assets/d3.js"></script> -->
-        <script
-        src="https://code.jquery.com/jquery-1.12.4.min.js"
-        integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ="
-        crossorigin="anonymous"></script>
         <script
         src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"
         integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU="
-        crossorigin="anonymous"></script>
-        <script type='text/javascript' src="http://code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css"> </script>
+        crossorigin="anonymous">
+        </script>
+        <script type='text/javascript'
+        src="https://code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css">
+        </script>
+        <script type='text/javascript' src="js/misc/d3-tip.js"> </script>
         <link
-        rel="stylesheet"
-        href="//rawgithub.com/Caged/d3-tip/master/examples/example-styles.css">
+            rel="stylesheet"
+            href="https://rawgithub.com/Caged/d3-tip/master/examples/example-styles.css">
+        </link>
         <style type="text/css">
         path.arc {
         cursor: move;
@@ -85,160 +85,194 @@
         </style>
     </head>
     <body>
-        <script type="text/javascript">
-        //Toggle stores whether the highlighting is on
-        var toggle = 0;
-        //Create an array logging what is connected to what
-        var linkedByIndex = {};
-        var optArray = [];
-
-        function renderFDL(name) {
-        $('ul.nav.nav-pills li a').click(function() {
-        $(this).parent().addClass('active').siblings().removeClass('active');
-        });
-        d3.selectAll("svg > g").remove();
-        reload("js/" + name + ".js");
-        return;
-        }
-        // function renderAdjMat(){
-        // $('ul.nav.nav-pills li a').click(function() {
-        // $(this).parent().addClass('active').siblings().removeClass('active');
-        // });
-        // d3.selectAll("svg > g> *").remove();
-        // reload("js/sample.js");
-        // return;
-        // }
-        function reload(name){
-        toggle = 0;
-        linkedByIndex = {};
-        optArray = [];
-        var script = document.getElementById('abc');
-        var parent = script.parentNode;
-        script.parentNode.removeChild( script); // remove the script
-        var newscript = document.createElement('script');
-        newscript.type= 'text/javascript';
-        newscript.src = name;
-        newscript.id = 'abc';
-        parent.appendChild(newscript);
-        return;
-        }
-
-
-        function searchNode() {
-            //find the node
-            var selectedVal = document.getElementById('search').value;
-            // console.log(selectedVal);
-            var nodes = d3.select("svg ").selectAll("g")._groups[0][1].childNodes;
-            var links = d3.select("svg ").selectAll("g")._groups[0][0].childNodes;
-            var svg = d3.select("svg")
-            toggle=1
-
-            var selected = nodes.forEach(function (d, i) {
-                if (d.__data__.name === selectedVal){
-                    d.style["opacity"] = 1
-                    d.attributes.r = "100"
-                    // d.__data__.fx = width/2.;
-                    // d.__data__.fy = height/2;
-                    // simulation.alphaTarget(0.1).restart();
-                    // return d;
-
-
-                } else {
-                    d.style["opacity"] = 0.1;
-
-                    // d.__data__.
-                }
+        <body>
+            <script type="text/javascript">
+            //Toggle stores whether the highlighting is on
+            var toggle = 0;
+            //Create an array logging what is connected to what
+            var linkedByIndex = {};
+            var optArray = [];
+            function renderFDL(name) {
+            $('ul.nav.nav-pills li a').click(function() {
+            $(this).parent().addClass('active').siblings().removeClass('active');
+            });
+            d3.selectAll("svg > g").remove();
+            reload("js/" + name + ".js");
+            return;
             }
-            );
-
+            function reload(name){
+            toggle = 0;
+            linkedByIndex = {};
+            optArray = [];
+            var script = document.getElementById('abc');
+            var parent = script.parentNode;
+            script.parentNode.removeChild( script); // remove the script
+            var newscript = document.createElement('script');
+            newscript.type= 'text/javascript';
+            newscript.src = name;
+            newscript.id = 'abc';
+            parent.appendChild(newscript);
+            return;
+            }
+            function inverseName(text){
+            texts = text.split(/[ ,]+/);
+            return (texts[1]).toLowerCase() + " "  + (texts[0]).toLowerCase();
+            }
+            function fixName(text){
+            texts = text.split(/[ ,]+/);
+            return fixCapitalsText(texts[1]) + " "  + fixCapitalsText(texts[0]);
+            }
+            function fixDeptName(text){
+            console.log(text);
+            res= "";
+            switch (text){
+            case "UNKNOWN":
+            res = "NA";
+            break;
+            case "centre for intelligent systems and their applications":
+            res = "Centre for Intelligent Systems and their Applications (CISA)"
+            break;
+            case "institute of language cognition and computation":
+            res = 'Institute of Language Cognition and Computation (ILCC)';
+            break;
+            case "laboratory for foundations of computer science":
+            res = "Laboratory for Foundations of Computer Science (LFCS)";
+            break;
+            case "institute for adaptive and neural computation":
+            res = "Institute for Adaptive and Neural Computation (IANC)";
+            break;
+            case "institute for computing systems architecture":
+            res = "Institute for Computing Systems Architecture (ICSA)";
+            break;
+            case "neuroinformatics dtc":
+            res = "Neuroinformatics DTC";
+            break;
+            case "institute of perception action and behaviour":
+            res = "Institute of Perception Action and Behaviour (IPAB)";
+            break;
+            case "school of philosophy psychology and language sciences":
+            res  = "School of Philosophy Psychology and Language Sciences";
+            break;
+            case "deanery of clinical sciences":
+            res = "Deanery of Clinical Sciences";
+            break;
+            default:
+            res = "NA"
+            }
+            return res
+            }
+            function fixCapitalsText (text){
+            result = "";
+            sentenceStart = true;
+            for (i = 0; i < text.length; i++){
+            ch = text.charAt (i);
+            if (sentenceStart && ch.match (/^\S$/)){
+            ch = ch.toUpperCase ();
+            sentenceStart = false;
+            } else {
+            ch = ch.toLowerCase ();
+            }
+            if (ch.match (/^[.!?]$/)){
+            sentenceStart = true;
+            }
+            result += ch;
+            }
+            return result;
+            }
+            function searchNode() {
+            //find the node
+            var selectedVal = inverseName(document.getElementById('search').value);
+            var svg = d3.select("svg")
+            var nodes = d3.select("svg").selectAll("g")._groups[0][1].childNodes;
+            var links = d3.select("svg").selectAll("g")._groups[0][0].childNodes;
+            toggle=1
+            nodes.forEach(function (d, i) {
+            if (d.__data__.name === selectedVal){
+            console.log(d);
+            d.style["opacity"] = 1
+            } else {
+            d.style["opacity"] = 0.1;
+            }
+            });
             links.forEach(function(d,i){
-                if (d.__data__.source.name === selectedVal || d.__data__.target.name === selectedVal){
-                    d.style["opacity"] = 1 // change styl eof line
-                    nodes[d.__data__.source.index].style['opacity']= d.__data__.source.name === selectedVal ? 1 : 0.3
-                    nodes[d.__data__.target.index].style['opacity']= d.__data__.target.name === selectedVal ? 1 : 0.3
-                    return
-                } else {
-                    d.style["opacity"] = .1
-                }
-            })
-
-
-            // var link = svg.selectAll(".link")
-            // "0style("opacity", "0");
-            // d3.selectAll(".node, .link").transition()
-            // .duration(5000)
-            // .style("opacity", 1);
-        }
-
-
-        </script>
-        <div class="container">
-            <nav class="navbar navbar-inverse">
-                <div class="container-fluid col-sm-12">
-                    <ul class="nav navbar-nav">
-                        <li class='active' ><a href="index.html">Collaboration Network</a></li>
-                        <!-- <li class=""><a href="topic.html">Topic Models</a></li> -->
-                        <li class="dropdown">
-                            <a class="dropdown-toggle" data-toggle="dropdown" href="topic.html">Topic Models (LDAvis)
-                                <span class="caret"></span>
-                            </a>
-                            <ul class="dropdown-menu">
-                                <li><a href="topic.html" onClick=render_tm('tmfull_meta')> tm-20yr </a></li>
-                                <li><a href="topic.html" onClick=render_tm('tmrest_meta')> tm-6yr </a></li>
-                                <li><a href="topic.html" onClick=render_tm('tmdblp')> tm-dblp </a></li>
-                            </ul>
-                        </li>
-                        <li><a href="topicnet.html">Topic-Similarity Network</a></li>
-                        <li class="dropdown">
-                            <a class="dropdown-toggle" data-toggle="dropdown" href="nb.html">Notebooks
-                                <span class="caret"></span>
-                            </a>
-                            <ul class="dropdown-menu">
-                                <li><a href="nb.html" onClick=load_page("preprocess_poinf.html")>
-                                  Processing staff from Informatics </a></li>
-                                <li><a href="nb.html" onClick=load_page("preprocess_pubs.html")>
-                                  Preprocessing publications</a></li>
-                                <li class="active"><a href="nb.html" onClick=load_page("infnet.html")>
-                                  Informatics Collaboration Network</a></li>
-                                <li><a href="nb.html" onClick=load_page("topicModelling.html")>
-                                  Topic Models</a></li>
-                                <li><a href="nb.html" onClick=load_page("embedding.html")>
-                                  Topic-similarity Networks</a></li>
-                                <li><a href="nb.html" onClick=load_page("analysis.html")>
-                                  Analysis of Networks</a></li>
-                            </ul>
-                        </li>
-                    </ul>
-                </div>
-            </nav>
-            <div class="row">
-                <div class="container-fluid">
-                    <!-- <h4 style="text-align:right">Informatics Collaboration Network</h4> -->
-                    <div class='col-sm-2'>
-                        <ul class="nav nav-pills nav-stacked" data-spy="affix" data-offset-top="205">
-                            <li class="active"><a href="#" id="infnet-fdl" onClick="renderFDL('topicnet_6yr')">topicnet-6yr</a></li>
-                            <li><a href="#" id="infnet-fdl" onClick="renderFDL('topicnetref_6yr')">topicnetref-6yr</a></li>
+            if (d.__data__.source.name === selectedVal || d.__data__.target.name === selectedVal){
+            d.style["opacity"] = 1 // change style of line
+            nodes[d.__data__.source.index].style['opacity']= d.__data__.source.name === selectedVal ? 1 : .5;
+            nodes[d.__data__.target.index].style['opacity']= d.__data__.target.name === selectedVal ? 1 : .5;
+            } else {
+            d.style["opacity"] = .1
+            }
+            });
+            }
+            </script>
+            <div class="container">
+                <nav class="navbar navbar-inverse">
+                    <div class="container-fluid col-sm-12">
+                        <ul class="nav navbar-nav">
+                            <li class='active' ><a href="index.html">Collaboration Network</a></li>
+                            <!-- <li class=""><a href="topic.html">Topic Models</a></li> -->
+                            <li class="dropdown">
+                                <a class="dropdown-toggle" data-toggle="dropdown" href="topic.html">Topic Models (LDAvis)
+                                    <span class="caret"></span>
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="topic.html" onClick=render_tm('tmfull_meta')> tm-20yr </a></li>
+                                    <li><a href="topic.html" onClick=render_tm('tmrest_meta')> tm-6yr </a></li>
+                                    <li><a href="topic.html" onClick=render_tm('tmdblp')> tm-dblp </a></li>
+                                </ul>
+                            </li>
+                            <li><a href="topicnet.html">Topic-Similarity Network</a></li>
+                            <li class="dropdown">
+                                <a class="dropdown-toggle" data-toggle="dropdown" href="nb.html">Notebooks
+                                    <span class="caret"></span>
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="nb.html" onClick=load_page("preprocess_poinf.html")>
+                                    Processing staff from Informatics </a></li>
+                                    <li><a href="nb.html" onClick=load_page("preprocess_pubs.html")>
+                                    Preprocessing publications</a></li>
+                                    <li class="active"><a href="nb.html" onClick=load_page("infnet.html")>
+                                    Informatics Collaboration Network</a></li>
+                                    <li><a href="nb.html" onClick=load_page("topicModelling.html")>
+                                    Topic Models</a></li>
+                                    <li><a href="nb.html" onClick=load_page("embedding.html")>
+                                    Topic-similarity Networks</a></li>
+                                    <li><a href="nb.html" onClick=load_page("analysis.html")>
+                                    Analysis of Networks</a></li>
+                                </ul>
+                            </li>
                         </ul>
-                        <p>
-                            <ul>
-                                <li>Mouseover each node to reveal details of the node (name, institute).</li>
-                                <li>Double click on any node to reveal node(s) connected to it.</li>
-                                <li>Search for individuals in the graph using search button.</li>
-                                <li>Double-click to reset graph</li>
-                            </ul>
-                        </p>
                     </div>
-                    <div class="col-sm-10">
-                        <div class="ui-widget">
-                            <input id="search">
-                            <button type="button" onclick="searchNode()">Search</button>
+                </nav>
+                <div class="row">
+                    <div class="container-fluid">
+                        <!-- <h4 style="text-align:right">Informatics Collaboration Network</h4> -->
+                        <div class='col-sm-2'>
+                            <ul class="nav nav-pills nav-stacked" data-spy="affix" data-offset-top="205">
+                                <li class="active"><a href="#" id="infnet-fdl" onClick="renderFDL('topicnet_6yr')">topicnet-6yr</a></li>
+                                <li><a href="#" id="infnet-fdl" onClick="renderFDL('topicnetref_6yr')">topicnetref-6yr</a></li>
+                            </ul>
+                            <p>
+                                <ul>
+                                    <li>Mouseover each node to reveal details of the node (name, institute).</li>
+                                    <li>Double click on any node to reveal node(s) connected to it.</li>
+                                    <li>Search for individuals in the graph using search button.</li>
+                                    <li>Double-click to reset graph</li>
+                                </ul>
+                            </p>
                         </div>
-                        <svg
-                            id="chart" width="900" height="550"
-                            viewBox="0 0 900 550"
-                            preserveAspectRatio=MidYMid meet">
-                        </svg>
-                        <script src="js/topicnet_6yr.js" id="abc"></script>
+                        <div class="col-sm-10">
+                            <div class="ui-widget">
+                                <input id="search">
+                                <button type="button" onclick="searchNode()">Search</button>
+                            </div>
+                            <svg
+                                id="chart" width="900" height="550"
+                                viewBox="0 0 900 550"
+                                preserveAspectRatio=MidYMid meet">
+                            </svg>
+                            <script src="js/topicnet_6yr.js" id="abc"></script>
+                        </div>
                     </div>
                 </div>
             </div>

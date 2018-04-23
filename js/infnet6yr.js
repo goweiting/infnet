@@ -2,31 +2,38 @@ var svg = d3.select("svg"),
     width = +svg.attr("width"),
     height = +svg.attr("height"); // offset st it does not over; limit the amount of space
 
-
-// var color = d3.scaleOrdinal(d3.schemeCategory20);
 var color = d3.scaleOrdinal() // these are the colors defined in the paper
+  .domain(['UNKNOWN',
+'centre for intelligent systems and their applications',
+'institute of language cognition and computation',
+'laboratory for foundations of computer science',
+'institute for adaptive and neural computation',
+'institute for computing systems architecture',
+'neuroinformatics dtc',
+'institute of perception action and behaviour',
+'school of philosophy psychology and language sciences',
+'deanery of clinical sciences'])
   .range(['#000000',
 '#0000ff',
 '#00ffff',
 '#00cc00',
 '#ff9900',
 '#ff0000',
-'#F20BCE',
+'#F20BCE', // pink
 '#999966',
 '#ccffff',
-'#ffffb3', // yellow
-'#e6e6ff'])
+'#ffffb3' // yellow
+]);
+
 
 var simulation = d3.forceSimulation()
-    .force("link", d3.forceLink().distance(8).id(function(d) {
+    .force("link", d3.forceLink().distance(15).id(function(d) {
         return d.id;
     }))
-    .force("boundary", d3.forceCollide(8).strength(.5))
+    .force("boundary", d3.forceCollide(8).strength(.9))
     // .force('lowerbound', d3.forceY(height/2).strength(0.001))
-    .force("charge", d3.forceManyBody().strength(-50).distanceMax(height/3).distanceMin(10))
+    .force("charge", d3.forceManyBody().strength(-50).distanceMax(height/3).distanceMin(15))
     .force("center", d3.forceCenter(width / 2, height / 2));
-
-// simulation.alpha
 
 function checkWeighted(graph){
     if (graph.links[0]["weight"]){
@@ -36,22 +43,12 @@ function checkWeighted(graph){
     }
 }
 
-//Set up tooltip
-// var tip = d3.tip()
-//     .attr('class', 'd3-tip')
-//     .offset([-10, 0])
-//     .html(function (d) {
-//     return  d.name + "";
-// })
-// svg.call(tip);
-
-
 d3.json("json/infnet6yr.json", function(error, graph) {
     if (error) throw error;
 
     var weighted = checkWeighted(graph);
-    // console.log(weighted);
-    //
+
+
     var link = svg.append("g")
         .attr("class", "links")
         .selectAll("line")
@@ -61,9 +58,8 @@ d3.json("json/infnet6yr.json", function(error, graph) {
             if (weighted){
                 return (d.weight * 2); // scale the weights by 2
             } else{
-                return 1.5 //
+                return 2.5 //
             }
-
         });
 
     var node = svg.append("g")
@@ -74,29 +70,27 @@ d3.json("json/infnet6yr.json", function(error, graph) {
         .attr("r", 9) // radius of circle
         .attr("fill", function(d) {
             // color the nodes according to the color of the group
-            return color(d.group);
+            return color(d.institute);
         })
         .call(d3.drag()
             .on("start", dragstarted)
             .on("drag", dragged)
             .on("end", dragended))
         .on('dblclick', connectedNodes)
-        // .on('mouseover', tip.show) //Added
-        // .on('mouseout', tip.hide); //Added
 
-    // add node label
-    node.append("title")
-        .text(function(d) {
-            var _str = d.name + '\n' + d.institute;
-            return _str
-        });
+    //Set up tooltip
+    var tip = d3.tip()
+        .attr('class', 'd3-tip')
+        // .offset([-10, 0])
+        .html(function (d) {
+            return   "<p>"+ fixName(d.name) +" </p> <p> " + fixDeptName(d.institute) + "</p>";
+    });
+    d3.selectAll('circle').call(tip);
+    d3.selectAll('circle')
+        .on('mouseover', tip.show)
+        .on('mouseout', tip.hide);
 
-    // var texts = svg.selectAll("text.label")
-    //             .data(graph.nodes)
-    //             .enter().append("text")
-    //             .attr("class", "label")
-    //             .attr("fill", "black")
-    //             .text(function(d) {  return d.name;  });
+
 
     // add node location
     simulation
@@ -129,9 +123,14 @@ d3.json("json/infnet6yr.json", function(error, graph) {
 
 
     for (var i = 0; i < graph.nodes.length - 1; i++) {
-        optArray.push(graph.nodes[i].name);
+        optArray.push(fixName(graph.nodes[i].name));
     }
     optArray = optArray.sort();
+    $(function () {
+        $("#search").autocomplete({
+            source: optArray
+        });
+    });
 
     function ticked() {
         // This is called and the links and node's location are set.
@@ -200,15 +199,9 @@ d3.json("json/infnet6yr.json", function(error, graph) {
         }
     }
 
-    $(function () {
-        $("#search").autocomplete({
-            source: optArray
-        });
-    });
-
-
 
 });
+
 
 function dragstarted(d) {
     if (!d3.event.active) simulation.alphaTarget(0.3).restart();

@@ -8,19 +8,19 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.13.0/d3.min.js"></script>
-        <!-- <script language="javascript" type="text/javascript" src="assets/d3.js"></script> -->
-        <script
-        src="https://code.jquery.com/jquery-1.12.4.min.js"
-        integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ="
-        crossorigin="anonymous"></script>
         <script
         src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"
         integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU="
-        crossorigin="anonymous"></script>
-        <script type='text/javascript' src="http://code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css"> </script>
+        crossorigin="anonymous">
+        </script>
+        <script type='text/javascript'
+        src="https://code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css">
+        </script>
+        <script type='text/javascript' src="js/misc/d3-tip.js"> </script>
         <link
-        rel="stylesheet"
-        href="//rawgithub.com/Caged/d3-tip/master/examples/example-styles.css">
+            rel="stylesheet"
+            href="https://rawgithub.com/Caged/d3-tip/master/examples/example-styles.css">
+        </link>
         <style type="text/css">
         path.arc {
         cursor: move;
@@ -64,9 +64,11 @@
         stroke: #fff;
         stroke-width: 1.5px;
         }
-        d3-tip {
-        line-height: 1;
-        color: black;
+        .d3-tip text {
+        fill: #fff;
+        font-size: 10px;
+        stroke: none;
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
         }
         svg-container {
         display: inline-block;
@@ -91,7 +93,6 @@
         //Create an array logging what is connected to what
         var linkedByIndex = {};
         var optArray = [];
-
         function renderFDL(name) {
         $('ul.nav.nav-pills li a').click(function() {
         $(this).parent().addClass('active').siblings().removeClass('active');
@@ -100,14 +101,6 @@
         reload("js/" + name + ".js");
         return;
         }
-        // function renderAdjMat(){
-        // $('ul.nav.nav-pills li a').click(function() {
-        // $(this).parent().addClass('active').siblings().removeClass('active');
-        // });
-        // d3.selectAll("svg > g> *").remove();
-        // reload("js/sample.js");
-        // return;
-        // }
         function reload(name){
         toggle = 0;
         linkedByIndex = {};
@@ -122,44 +115,96 @@
         parent.appendChild(newscript);
         return;
         }
-
-
-
-        function searchNode() {
-            // console.log(optArray);
-            // console.log(linkedByIndex);
-            //find the node
-            var selectedVal = document.getElementById('search').value;
-
-            var svg = d3.select("svg")
-            var nodes = d3.select("svg").selectAll("g")._groups[0][1].childNodes;
-            var links = d3.select("svg").selectAll("g")._groups[0][0].childNodes;
-
-            toggle=1
-
-            nodes.forEach(function (d, i) {
-                if (d.__data__.name === selectedVal){
-                    console.log(d);
-                    d.style["opacity"] = 1
-                    d.attributes.r = "100"
-                } else {
-                    d.style["opacity"] = 0.1;
-                }
-            }
-            );
-
-            links.forEach(function(d,i){
-                if (d.__data__.source.name === selectedVal || d.__data__.target.name === selectedVal){
-                    d.style["opacity"] = 1 // change styl eof line
-                    nodes[d.__data__.source.index].style['opacity']= d.__data__.source.name === selectedVal ? 1 : 0.3
-                    nodes[d.__data__.target.index].style['opacity']= d.__data__.target.name === selectedVal ? 1 : 0.3
-                } else {
-                    d.style["opacity"] = .1
-                }
-            })
+        function inverseName(text){
+        texts = text.split(/[ ,]+/);
+        return (texts[1]).toLowerCase() + " "  + (texts[0]).toLowerCase();
         }
-
-
+        function fixName(text){
+        texts = text.split(/[ ,]+/);
+        return fixCapitalsText(texts[1]) + " "  + fixCapitalsText(texts[0]);
+        }
+        function fixDeptName(text){
+        console.log(text);
+        res= "";
+        switch (text){
+        case "UNKNOWN":
+        res = "NA";
+        break;
+        case "centre for intelligent systems and their applications":
+        res = "Centre for Intelligent Systems and their Applications (CISA)"
+        break;
+        case "institute of language cognition and computation":
+        res = 'Institute of Language Cognition and Computation (ILCC)';
+        break;
+        case "laboratory for foundations of computer science":
+        res = "Laboratory for Foundations of Computer Science (LFCS)";
+        break;
+        case "institute for adaptive and neural computation":
+        res = "Institute for Adaptive and Neural Computation (IANC)";
+        break;
+        case "institute for computing systems architecture":
+        res = "Institute for Computing Systems Architecture (ICSA)";
+        break;
+        case "neuroinformatics dtc":
+        res = "Neuroinformatics DTC";
+        break;
+        case "institute of perception action and behaviour":
+        res = "Institute of Perception Action and Behaviour (IPAB)";
+        break;
+        case "school of philosophy psychology and language sciences":
+        res  = "School of Philosophy Psychology and Language Sciences";
+        break;
+        case "deanery of clinical sciences":
+        res = "Deanery of Clinical Sciences";
+        break;
+        default:
+        res = "NA"
+        }
+        return res
+        }
+        function fixCapitalsText (text){
+        result = "";
+        sentenceStart = true;
+        for (i = 0; i < text.length; i++){
+        ch = text.charAt (i);
+        if (sentenceStart && ch.match (/^\S$/)){
+        ch = ch.toUpperCase ();
+        sentenceStart = false;
+        } else {
+        ch = ch.toLowerCase ();
+        }
+        if (ch.match (/^[.!?]$/)){
+        sentenceStart = true;
+        }
+        result += ch;
+        }
+        return result;
+        }
+        function searchNode() {
+        //find the node
+        var selectedVal = inverseName(document.getElementById('search').value);
+        var svg = d3.select("svg")
+        var nodes = d3.select("svg").selectAll("g")._groups[0][1].childNodes;
+        var links = d3.select("svg").selectAll("g")._groups[0][0].childNodes;
+        toggle=1
+        nodes.forEach(function (d, i) {
+        if (d.__data__.name === selectedVal){
+        console.log(d);
+        d.style["opacity"] = 1
+        } else {
+        d.style["opacity"] = 0.1;
+        }
+        });
+        links.forEach(function(d,i){
+        if (d.__data__.source.name === selectedVal || d.__data__.target.name === selectedVal){
+        d.style["opacity"] = 1 // change style of line
+        nodes[d.__data__.source.index].style['opacity']= d.__data__.source.name === selectedVal ? 1 : .5;
+        nodes[d.__data__.target.index].style['opacity']= d.__data__.target.name === selectedVal ? 1 : .5;
+        } else {
+        d.style["opacity"] = .1
+        }
+        });
+        }
         </script>
         <div class="container">
             <nav class="navbar navbar-inverse">
@@ -184,17 +229,17 @@
                             </a>
                             <ul class="dropdown-menu">
                                 <li><a href="nb.html" onClick=load_page("preprocess_poinf.html")>
-                                  Processing staff from Informatics </a></li>
+                                Processing staff from Informatics </a></li>
                                 <li><a href="nb.html" onClick=load_page("preprocess_pubs.html")>
-                                  Preprocessing publications</a></li>
+                                Preprocessing publications</a></li>
                                 <li class="active"><a href="nb.html" onClick=load_page("infnet.html")>
-                                  Informatics Collaboration Network</a></li>
+                                Informatics Collaboration Network</a></li>
                                 <li><a href="nb.html" onClick=load_page("topicModelling.html")>
-                                  Topic Models</a></li>
+                                Topic Models</a></li>
                                 <li><a href="nb.html" onClick=load_page("embedding.html")>
-                                  Topic-similarity Networks</a></li>
-                              <li><a href="nb.html" onClick=load_page("analysis.html")>
-                                  Analysis of Networks</a></li>
+                                Topic-similarity Networks</a></li>
+                                <li><a href="nb.html" onClick=load_page("analysis.html")>
+                                Analysis of Networks</a></li>
                             </ul>
                         </li>
                     </ul>
@@ -209,7 +254,7 @@
                             <li class="active"><a href="#" id="infnet-fdl" onClick="renderFDL('infnet6yr')">infnet-6yr</a></li>
                             <li><a href="#" id="infnet-fdl" onClick="renderFDL('infnet6yr_w')">infnet-6yr (weighted)</a></li>
                             <li><a href="#" id="infnet-fdl" onClick="renderFDL('infnet20yr')">infnet-20yr</a></li>
-                            <li><a href="#" id="infnet-fdl" onClick="renderFDL('collabnet_20yr')">collabnet-20yr</a></li>
+                            <!-- <li><a href="#" id="infnet-fdl" onClick="renderFDL('collabnet_20yr')">collabnet-20yr</a></li> -->
                             <!-- <li><a href="#" id="infnet-fdl-group" onClick="renderFDL('infnet6yr_group')">Stretch by institutes</a></li> -->
                             <!-- <li><a href="#" id="infnet-adjmat" onClick="renderAdjMat()">Adjacency Matrix</a></li> -->
                         </ul>
@@ -224,7 +269,7 @@
                     </div>
                     <div class="col-sm-10">
                         <div class="ui-widget">
-                            <input id="search">
+                            <input id="search" class=".ui-autocomplete">
                             <button type="button" onclick="searchNode()">Search</button>
                         </div>
                         <svg
@@ -236,5 +281,6 @@
                     </div>
                 </div>
             </div>
-        </body>
-    </html>
+        </div>
+    </body>
+</html>

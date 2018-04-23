@@ -12,19 +12,19 @@ var color = d3.scaleOrdinal() // these are the colors defined in the paper
 'neuroinformatics dtc',
 'institute of perception action and behaviour',
 'school of philosophy psychology and language sciences',
-'deanery of clinical science',
-'?'])
+'deanery of clinical sciences'])
   .range(['#000000',
 '#0000ff',
 '#00ffff',
 '#00cc00',
 '#ff9900',
 '#ff0000',
-'#F20BCE',
+'#F20BCE', // pink
 '#999966',
 '#ccffff',
-'#ffffb3', // yellow
-'#e6e6ff']);
+'#ffffb3' // yellow
+]);
+
 var simulation = d3.forceSimulation()
     .force("link", d3.forceLink().distance(8).id(function(d) {
         return d.id;
@@ -44,16 +44,6 @@ function checkWeighted(graph){
     }
 }
 
-//Set up tooltip
-// var tip = d3.tip()
-//     .attr('class', 'd3-tip')
-//     .offset([-10, 0])
-//     .html(function (d) {
-//     return  d.name + "";
-// })
-// svg.call(tip);
-
-
 d3.json("json/infnet20yr.json", function(error, graph) {
     if (error) throw error;
 
@@ -69,7 +59,7 @@ d3.json("json/infnet20yr.json", function(error, graph) {
             if (weighted){
                 return (d.weight *1.5); // scale the weights by 2
             } else{
-                return 1.5 //
+                return 2.5 //
             }
 
         });
@@ -89,22 +79,18 @@ d3.json("json/infnet20yr.json", function(error, graph) {
             .on("drag", dragged)
             .on("end", dragended))
         .on('dblclick', connectedNodes)
-        // .on('mouseover', tip.show) //Added
-        // .on('mouseout', tip.hide); //Added
 
-    // add node label
-    node.append("title")
-        .text(function(d) {
-            var _str = d.name + '\n' + d.institute;
-            return _str
-        });
-
-    // var texts = svg.selectAll("text.label")
-    //             .data(graph.nodes)
-    //             .enter().append("text")
-    //             .attr("class", "label")
-    //             .attr("fill", "black")
-    //             .text(function(d) {  return d.name;  });
+    //Set up tooltip
+    var tip = d3.tip()
+        .attr('class', 'd3-tip')
+        // .offset([-10, 0])
+        .html(function (d) {
+            return   "<p>"+ fixName(d.name) +" </p> <p> " + fixDeptName(d.institute) + "</p>";
+    });
+    d3.selectAll('circle').call(tip);
+    d3.selectAll('circle')
+        .on('mouseover', tip.show)
+        .on('mouseout', tip.hide);
 
     // add node location
     simulation
