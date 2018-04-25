@@ -45,7 +45,7 @@ function checkWeighted(graph){
 
 
 
-d3.json("json/infnet6yr_w.json", function(error, graph) {
+d3.json("json/infnet6yr_w_mod.json", function(error, graph) {
     if (error) throw error;
 
     var weighted = checkWeighted(graph);
