@@ -88,13 +88,6 @@ d3.json("json/infnet6yr_w.json", function(error, graph) {
             .on("end", dragended))
         .on('dblclick', connectedNodes)
 
-    // add node label
-    node.append("title")
-        .text(function(d) {
-            var _str = d.name + '\n' + d.institute;
-            return _str
-        });
-
     //Set up tooltip
     var tip = d3.tip()
         .attr('class', 'd3-tip')
