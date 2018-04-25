@@ -123,7 +123,7 @@ d3.json("json/infnet20yr.json", function(error, graph) {
 
 
     for (var i = 0; i < graph.nodes.length - 1; i++) {
-        optArray.push(graph.nodes[i].name);
+        optArray.push(fixName(graph.nodes[i].name));
     }
     optArray = optArray.sort();
 
